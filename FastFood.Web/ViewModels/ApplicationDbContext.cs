@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace FastFood.Repository
 {
@@ -24,9 +25,18 @@ namespace FastFood.Repository
         public DbSet<OrderHeader> OrderHeaders { get; set; }
         public DbSet<SubCategory> SubCategories { get; set; }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Item>()
+                .HasOne(i => i.Category)
+                .WithMany(c => c.Items)
+                .HasForeignKey(i => i.CategoryId)
+                .OnDelete(DeleteBehavior.ClientSetNull); // Change the behavior to NO ACTION
 
+            // ... other configurations ...
 
-
-
+            base.OnModelCreating(modelBuilder);
+        }
     }
+
 }
