@@ -24,7 +24,7 @@ namespace FastFood.Web.Areas.Admin.Controllers
                     Title = x.Title,
 
                 }).ToList();
-            return View();
+            return View(listFromDb);
         }
 
         [HttpGet]
