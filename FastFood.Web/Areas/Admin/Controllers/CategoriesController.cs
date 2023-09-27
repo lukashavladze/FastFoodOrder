@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FastFood.Web.Areas.Admin.Controllers
 {
+    [Area("Admin")]
     public class CategoriesController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -45,7 +46,7 @@ namespace FastFood.Web.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            var viewModel = _context.Categories.Where(x=>x.Id == id).Select(x=>new CategoryViewModel()
+            var viewModel = _context.Categories.Where(x=>x.Id == id).Select(x=>new CategoryViewModel() 
             {
                 Id =x.Id,
                 Title = x.Title
