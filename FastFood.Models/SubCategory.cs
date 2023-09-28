@@ -15,7 +15,7 @@ namespace FastFood.Models
         [Required]
 
         public string Title { get; set; }
-        [ForeignKey(nameof(CategoryId))]
+        
         public int CategoryId { get; set; }
 
         public Category Category { get; set; }

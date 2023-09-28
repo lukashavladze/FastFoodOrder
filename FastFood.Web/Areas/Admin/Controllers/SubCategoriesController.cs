@@ -42,6 +42,7 @@ namespace FastFood.Web.Areas.Admin.Controllers
                 _context.SaveChanges();
                 return RedirectToAction("Index");
             }
+            ViewBag.Error = "Failed";
             return View(vm);
         }
 

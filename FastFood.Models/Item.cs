@@ -15,13 +15,14 @@ namespace FastFood.Models
 
         public string Description { get; set; }
 
+        public string Image {get; set; }
+
         public double Price { get; set; }
-        [ForeignKey(nameof(CategoryId))]
+        
         public int CategoryId { get; set; } 
 
         public Category Category { get; set; }
 
-        [ForeignKey(nameof(SubCategoryId))]
         public int SubCategoryId { get; set; }  
 
         public SubCategory SubCategory { get; set; }
