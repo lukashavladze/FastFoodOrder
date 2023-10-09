@@ -28,7 +28,10 @@ namespace FastFood.Web.Areas.Admin.Controllers
                 Description = model.Description,
                 Price = model.Price,
                 CategoryId = model.CategoryId,
-                SubCategoryId = model.SubCategoryId
+                SubCategoryId = model.SubCategoryId,
+                Category = model.Category,
+                subCategory = model.SubCategory
+
             }).ToList();
             return View(items);
         }
@@ -76,10 +79,69 @@ namespace FastFood.Web.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            var item = _context.Items.Where(x=>x.Id == id).FirstOrDefault();
+            var item = _context.Items.Include(x => x.Category).Include(y => y.SubCategory)
+        .FirstOrDefault(x => x.Id == id);
+
+            if (item == null)
+            {
+               
+                return NotFound();
+            }
+            var itemViewModel = new ItemViewModel
+            {
+                Id = item.Id,
+                Title = item.Title,
+                Description = item.Description,
+                Price = item.Price,
+                CategoryId = item.CategoryId,
+                SubCategoryId = item.SubCategoryId,
+                Category = item.Category,
+                subCategory = item.SubCategory
+            };
             ViewBag.Category = new SelectList(_context.Categories, "Id", "Title", item.CategoryId);
             ViewBag.SubCategory = new SelectList(_context.SubCategories, "Id", "Title", item.SubCategoryId);
-            return View(item);
+            return View(itemViewModel);
+        }
+        // edit-i gasaketebelia
+        [HttpPost]
+        public IActionResult Edit(ItemViewModel vm)
+        {
+            if (ModelState.IsValid)
+            {
+                var existingItem = _context.Items.FirstOrDefault(x => x.Id == vm.Id);
+
+                if (existingItem == null)
+                {
+                    // Handle the case where the item with the specified ID is not found
+                    return NotFound();
+                }
+
+                existingItem.Price = vm.Price;
+                existingItem.Description = vm.Description;
+                existingItem.Title = vm.Title;
+                existingItem.CategoryId = vm.CategoryId;
+                existingItem.SubCategoryId = vm.SubCategoryId;
+
+                _context.SaveChanges();
+
+                return RedirectToAction("Index");
+            }
+
+            // If ModelState is not valid, return to the edit view with validation errors
+            ViewBag.Category = new SelectList(_context.Categories, "Id", "Title", vm.CategoryId);
+            ViewBag.SubCategory = new SelectList(_context.SubCategories, "Id", "Title", vm.SubCategoryId);
+            return View(vm);
+        }
+        [HttpGet]
+        public IActionResult Delete(int id)
+        {
+            var item = _context.Items.Where(x => x.Id == id).FirstOrDefault();
+            if (item != null)
+            {
+                _context.Items.Remove(item);
+                _context.SaveChanges();
+            }
+            return RedirectToAction("Index");
         }
     }
 }

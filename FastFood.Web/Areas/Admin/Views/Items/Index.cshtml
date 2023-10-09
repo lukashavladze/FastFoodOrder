@@ -49,10 +49,10 @@
                 @Html.DisplayFor(modelItem => item.Price)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.CategoryId)
+                @Html.DisplayFor(modelItem => item.Category.Title)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.SubCategoryId)
+                @Html.DisplayFor(modelItem => item.subCategory.Title)
             </td>
             <td>
                 @Html.ActionLink("Edit", "Edit", new {  id=item.Id }) |

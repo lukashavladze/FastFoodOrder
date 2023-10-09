@@ -46,32 +46,52 @@ namespace FastFood.Web.Areas.Admin.Controllers
             return View(vm);
         }
 
-        [HttpGet]
         public IActionResult Edit(int id)
         {
-            SubCategoryViewModel vm = new SubCategoryViewModel();
-            var subCategory = _context.SubCategories.Where(x => x.Id == id).FirstOrDefault();
-            if (subCategory != null)
+            var subCategory = _context.SubCategories.FirstOrDefault(x => x.Id == id);
+
+            if (subCategory == null)
             {
-                vm.Id = subCategory.Id; 
-                vm.Title = subCategory.Title;
-                ViewBag.category = new SelectList(_context.Categories, "Id", "Title", subCategory.CategoryId);
+                // Handle the case where the subcategory with the specified ID is not found
+                return NotFound();
             }
-            return View(vm);
+
+            var subCategoryViewModel = new SubCategoryViewModel
+            {
+                Id = subCategory.Id,
+                Title = subCategory.Title,
+                CategoryId = subCategory.CategoryId
+            };
+
+            ViewBag.Category = new SelectList(_context.Categories, "Id", "Title", subCategory.CategoryId);
+
+            return View(subCategoryViewModel);
         }
+
         [HttpPost]
         public IActionResult Edit(SubCategoryViewModel vm)
         {
-            SubCategory model = new SubCategory();
             if (ModelState.IsValid)
             {
+                var existingSubCategory = _context.SubCategories.FirstOrDefault(x => x.Id == vm.Id);
 
-                model.Title = vm.Title;
-                model.CategoryId = vm.CategoryId;
-                _context.SubCategories.Add(model);
+                if (existingSubCategory == null)
+                {
+                    // Handle the case where the subcategory with the specified ID is not found
+                    return NotFound();
+                }
+
+                existingSubCategory.Title = vm.Title;
+                existingSubCategory.CategoryId = vm.CategoryId;
+
                 _context.SaveChanges();
+
                 return RedirectToAction("Index");
             }
+
+            // If ModelState is not valid, return to the edit view with validation errors
+            ViewBag.Category = new SelectList(_context.Categories, "Id", "Title", vm.CategoryId);
+
             return View(vm);
         }
 
